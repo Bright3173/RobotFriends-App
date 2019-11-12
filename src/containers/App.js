@@ -1,43 +1,61 @@
-
-
-
-
-	
-		);
-		</div>
-		</Scroll>
-		<CardList robots= {filteredRobots} />
-		<div className='tc'>
-		<h1 className= 'f1'> Smart RoboFriends</h1>
-		<Scroll>
-		<SearchBox searchChange= {this.onSaerchChange} />
-		super()
-	.then(response=> response.json())
-	.then(users=> this.setState({robots: users}));
-	const filteredRobots = robots.filter(robot =>{
-	const {robots, searchfield} = this.state;
-	constructor() {
-	fetch('http://jsonplaceholder.typicode.com/users')
-	return(
-	robots: [],
-	searchfield: ''
-	this.setState({searchfield: event.target.value })	
-	})
- }	
-class App extends Component {
-componentDidMount() {
-export default App;
-import './App.css';
-import CardList from '../components/CardList';
 import React, {Component} from 'react';
-import Scroll from '../components/Scroll';
+import {connect} from 'react-redux';
+import CardList from '../components/CardList';
 import SearchBox from '../components/SearchBox';
-onSearchChange = (event)=> {
-render() {
-return robot.name.toLowerCase().includes(searchfield.toLowerCase());
+import ErrorBoundry from '../components/ErrorBoundry';
+import Scroll from '../components/Scroll';
+import './App.css';
+import {setSearchField} from '../action.js';
+
+const mapStateToProps = state =>{
+	return {
+		searchField: state.searchField
+	}
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		onSearchChange: (event)=> dispatch(setSearchField(event.target.value))
+	}
+}
+
+class App extends Component {
+	constructor() {
+		super()
 this.state = {
+	robots: []
+ }	
 }
+
+componentDidMount() {
+	fetch('https://jsonplaceholder.typicode.com/users')
+	.then(response=> response.json())
+	.then(users=>  {this.setState({robots: users})});
 }
+
+render() {
+	const { robots } = this.state;
+	const {searchField, onSearchChange} =this.props
+	const filteredRobots = robots.filter(robot =>{
+    return robot.name.toLowerCase().includes(searchField.toLowerCase());
+  })
+  
+  return(
+    <>
+      {
+      !robots.length ?
+        <h1>Loading</h1> :
+      
+        <div className='tc'>
+          <h1 className='f1'> Smart RoboFriends</h1>
+          <SearchBox searchChange= {onSearchChange} />
+          <Scroll>
+            <CardList robots= {filteredRobots} />
+          </Scroll>
+        </div>
+        }
+    </>);
+ }
 }
-}
-}
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);
